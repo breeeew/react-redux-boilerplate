@@ -1,5 +1,7 @@
 import React from "react";
+import {bindActionCreators} from "redux";
 import {connect} from "react-redux";
+import * as actions from "../actions";
 
 import Example from "../components/Example";
 
@@ -8,14 +10,14 @@ import Example from "../components/Example";
 class App extends React.Component {
   render() {
     return (
-      <Example/>
+      <Example {...this.props.reducerOne} {...bindActionCreators(actions, this.props.dispatch)}/>
     )
   }
 }
 
 function mapStateToProps(state) {
   return {
-    ...state.users,
+    reducerOne: state.reducerOne
   };
 }
 

@@ -19678,7 +19678,7 @@
 
 	var _App2 = _interopRequireDefault(_App);
 
-	var _store = __webpack_require__(180);
+	var _store = __webpack_require__(182);
 
 	var _store2 = _interopRequireDefault(_store);
 
@@ -20867,11 +20867,19 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
+	var _redux = __webpack_require__(167);
+
 	var _reactRedux = __webpack_require__(160);
 
-	var _Example = __webpack_require__(179);
+	var _actions = __webpack_require__(179);
+
+	var actions = _interopRequireWildcard(_actions);
+
+	var _Example = __webpack_require__(181);
 
 	var _Example2 = _interopRequireDefault(_Example);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -20896,7 +20904,7 @@
 	  _createClass(App, [{
 	    key: "render",
 	    value: function render() {
-	      return _react2.default.createElement(_Example2.default, null);
+	      return _react2.default.createElement(_Example2.default, _extends({}, this.props.reducerOne, (0, _redux.bindActionCreators)(actions, this.props.dispatch)));
 	    }
 	  }]);
 
@@ -20904,13 +20912,53 @@
 	}(_react2.default.Component);
 
 	function mapStateToProps(state) {
-	  return _extends({}, state.users);
+	  return {
+	    reducerOne: state.reducerOne
+	  };
 	}
 
 	exports.default = (0, _reactRedux.connect)(mapStateToProps)(App);
 
 /***/ },
 /* 179 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.fetchData = fetchData;
+
+	var _constants = __webpack_require__(180);
+
+	var types = _interopRequireWildcard(_constants);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function fetchData() {
+	  return function (dispatch) {
+	    dispatch({ type: types.START_FETCHING });
+	    setTimeout(function () {
+	      dispatch({ type: types.FETCHING_COMPLETE, data: "Hello world!" });
+	    }, 2000);
+	  };
+	}
+
+/***/ },
+/* 180 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	var START_FETCHING = exports.START_FETCHING = "START_FETCHING";
+	var FETCHING_COMPLETE = exports.FETCHING_COMPLETE = "FETCHING_COMPLETE";
+
+/***/ },
+/* 181 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -20943,12 +20991,17 @@
 	  }
 
 	  _createClass(Example, [{
+	    key: "componentWillMount",
+	    value: function componentWillMount() {
+	      this.props.fetchData();
+	    }
+	  }, {
 	    key: "render",
 	    value: function render() {
 	      return _react2.default.createElement(
 	        "div",
 	        null,
-	        "Example Component"
+	        this.props.isFetching ? "Loading..." : this.props.data
 	      );
 	    }
 	  }]);
@@ -20959,7 +21012,7 @@
 	exports.default = Example;
 
 /***/ },
-/* 180 */
+/* 182 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -20971,11 +21024,11 @@
 
 	var _redux = __webpack_require__(167);
 
-	var _reduxThunk = __webpack_require__(181);
+	var _reduxThunk = __webpack_require__(183);
 
 	var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
 
-	var _reducers = __webpack_require__(182);
+	var _reducers = __webpack_require__(184);
 
 	var _reducers2 = _interopRequireDefault(_reducers);
 
@@ -20988,7 +21041,7 @@
 	}
 
 /***/ },
-/* 181 */
+/* 183 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -21007,7 +21060,7 @@
 	module.exports = thunkMiddleware;
 
 /***/ },
-/* 182 */
+/* 184 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -21018,30 +21071,30 @@
 
 	var _redux = __webpack_require__(167);
 
-	var _actions = __webpack_require__(183);
+	var _constants = __webpack_require__(180);
 
-	var types = _interopRequireWildcard(_actions);
+	var types = _interopRequireWildcard(_constants);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-	function users() {
-	  var state = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	function reducerOne() {
+	  var state = arguments.length <= 0 || arguments[0] === undefined ? {
+	    isFetching: false
+	  } : arguments[0];
 	  var action = arguments[1];
 
 	  switch (action.type) {
+	    case types.START_FETCHING:
+	      return Object.assign({}, state, { isFetching: true });
+	    case types.FETCHING_COMPLETE:
+	      return Object.assign({}, state, { isFetching: false, data: action.data });
 	    default:
 	      return state;
 	  }
 	}
 
-	var rootReducer = (0, _redux.combineReducers)({ users: users });
+	var rootReducer = (0, _redux.combineReducers)({ reducerOne: reducerOne });
 	exports.default = rootReducer;
-
-/***/ },
-/* 183 */
-/***/ function(module, exports) {
-
-	"use strict";
 
 /***/ }
 /******/ ]);
